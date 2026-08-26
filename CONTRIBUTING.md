@@ -64,6 +64,10 @@ Rules:
   Only credit an `Original` author you can point to evidence for — a NOTICE, a LICENSE
   copyright line, or the upstream About.xml. A wrong attribution in a published mod is
   worse than a missing one.
+
+  [ATTRIBUTION.md](ATTRIBUTION.md) records the per-mod provenance and the evidence
+  behind each `Original` credit, plus what is still unresolved. Update it in the same
+  change that touches an `<author>`.
 - **Tags are plain semver** (`v1.2.3`), decoupled from the RimWorld version.
 - **Commits follow Conventional Commits.** The release changelog is generated from
   them; anything else shows up as an empty release body.
