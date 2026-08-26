@@ -116,3 +116,16 @@ uploading against an empty ID.
    semver (`1.2.3`, not `v1.2.3`).
 3. The workflow packs the mod, generates the changelog, creates the `v1.2.3` GitHub
    release, and updates the existing Workshop item in place.
+
+## Cross-repository dependencies
+
+`mod-build.yml` takes a `compile` input. Leave it `true`. The one exception today is
+`rimworld-enclave-territorial-administration`, whose csproj carries a `ProjectReference`
+to `rimworld-storyteller-enclave` via a `../../../` sibling path. That resolves on a
+developer machine where both repos are cloned side by side, and never on a runner, so
+that repo gets XML validation without a compile check.
+
+Setting `compile: false` buys green CI, not correctness — it is a gap, and the repo that
+needs it should be fixed rather than left there. `rimworld-warfare-framework` shows the
+in-org alternative for a *soft* dependency: a reflection bridge
+(`EnclaveTellerReflection.IsPresent`) with no compile-time reference at all.
