@@ -1,0 +1,44 @@
+<Project>
+
+  <!-- Shared packaging for every inten-gg RimWorld mod. Keep byte-identical across repos;
+       per-mod values live in Directory.Build.props. -->
+
+  <PropertyGroup>
+    <DistDir>$(MSBuildThisFileDirectory)dist/</DistDir>
+  </PropertyGroup>
+
+  <Target Name="PackMod" AfterTargets="Build;Pack;Publish">
+
+    <ItemGroup>
+      <_AssetFiles Include="$(MSBuildThisFileDirectory)assets/**/*" />
+      <!-- Hand-written sources only: the SDK's generated AssemblyInfo.cs makes @(Compile)
+           non-empty even for content-only mods, so it cannot be used to tell them apart. -->
+      <_ModSourceFiles Include="$(MSBuildProjectDirectory)/**/*.cs"
+                       Exclude="$(MSBuildProjectDirectory)/obj/**/*.cs;$(MSBuildProjectDirectory)/bin/**/*.cs" />
+    </ItemGroup>
+
+    <Copy SourceFiles="@(_AssetFiles)"
+          DestinationFiles="@(_AssetFiles->'$(DistDir)%(RecursiveDir)%(Filename)%(Extension)')" />
+
+    <Copy SourceFiles="$(MSBuildThisFileDirectory)LICENSE.txt"
+          DestinationFolder="$(DistDir)"
+          Condition="Exists('$(MSBuildThisFileDirectory)LICENSE.txt')" />
+
+    <!-- Code mods only: a content-only mod must not ship an empty stub assembly. -->
+    <Copy SourceFiles="$(TargetPath)"
+          DestinationFolder="$(DistDir)Assemblies"
+          Condition="'@(_ModSourceFiles)' != ''" />
+
+    <XmlPoke XmlInputPath="$(DistDir)About/About.xml" Query="/ModMetaData/name"
+             Value="$(ModDevName)"
+             Condition="'$(Configuration)'=='Debug' AND '$(ModDevName)'!='' AND Exists('$(DistDir)About/About.xml')" />
+
+    <XmlPoke XmlInputPath="$(DistDir)About/About.xml" Query="/ModMetaData/packageId"
+             Value="$(ModDevPackageId)"
+             Condition="'$(Configuration)'=='Debug' AND '$(ModDevPackageId)'!='' AND Exists('$(DistDir)About/About.xml')" />
+
+    <Message Text="Mod packaged → $(DistDir)" Importance="high" />
+
+  </Target>
+
+</Project>

@@ -1,0 +1,17 @@
+name: Publish to Steam Workshop
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number (pure semver, e.g. 1.2.3)'
+        required: true
+
+jobs:
+  publish:
+    uses: inten-gg/rimworld-ci/.github/workflows/mod-publish.yml@v1
+    with:
+      version: ${{ inputs.version }}
+      solution: <ModName>.slnx
+      published-file-id: ${{ vars.WORKSHOP_PUBLISHED_FILE_ID }}
+    secrets: inherit
