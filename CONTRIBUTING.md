@@ -46,6 +46,24 @@ Rules:
 
   The display `<name>` in About.xml is *not* prefixed. Never rename a `defName` or a
   translation key to match — those are what keep savegames loadable.
+
+- **`<author>` is `INT`**, with individual contributors in parentheses where there are
+  any: `INT (Helljumper, Codex)`. The group is the author; names in the parentheses are
+  who worked on it.
+
+  Where a mod is a port, fork or add-on, the upstream author follows an `Original`
+  clause so no attribution is lost:
+
+  | Situation | `<author>` |
+  |---|---|
+  | our own work | `INT (Helljumper)` |
+  | port of someone's mod | `INT (Helljumper), Original Arisher` |
+  | add-on patching another mod | `INT (Helljumper, Codex), Original kazepsi` |
+  | fork of an already-continued mod | `INT, Original RamRod, Continued by Mlie` |
+
+  Only credit an `Original` author you can point to evidence for — a NOTICE, a LICENSE
+  copyright line, or the upstream About.xml. A wrong attribution in a published mod is
+  worse than a missing one.
 - **Tags are plain semver** (`v1.2.3`), decoupled from the RimWorld version.
 - **Commits follow Conventional Commits.** The release changelog is generated from
   them; anything else shows up as an empty release body.
