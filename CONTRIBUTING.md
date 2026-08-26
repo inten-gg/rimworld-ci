@@ -33,7 +33,19 @@ Rules:
   `.zip` or `About/PublishedFileId.txt`.
 - **License file is `LICENSE.txt`.** `PackMod` copies it into `dist/`; a `.md` variant
   is silently skipped.
-- **Namespace is `Rimworld.<Domain>.<Mod>`**, e.g. `Rimworld.Fallout.Vertibirds`.
+- **Identity is derived from the repository name**, with `rimworld-` stripped and the
+  rest dot-separated. `packageId` takes a `gg.inten.rimworld.` prefix in lowercase; the
+  C# namespace and `AssemblyName` take `Inten.Rimworld.` in PascalCase.
+
+  | | |
+  |---|---|
+  | repo | `rimworld-storyteller-enclave` |
+  | `packageId` | `gg.inten.rimworld.storyteller.enclave` |
+  | namespace / `AssemblyName` | `Inten.Rimworld.Storyteller.Enclave` |
+  | Harmony id | `gg.inten.rimworld.storyteller.enclave` |
+
+  The display `<name>` in About.xml is *not* prefixed. Never rename a `defName` or a
+  translation key to match — those are what keep savegames loadable.
 - **Tags are plain semver** (`v1.2.3`), decoupled from the RimWorld version.
 - **Commits follow Conventional Commits.** The release changelog is generated from
   them; anything else shows up as an empty release body.
