@@ -1,0 +1,49 @@
+name: Mod Build
+
+on:
+  workflow_call:
+    inputs:
+      solution:
+        description: 'Solution or project to build. Empty lets dotnet discover it.'
+        type: string
+        required: false
+        default: ''
+      dotnet-version:
+        description: 'SDK version passed to actions/setup-dotnet.'
+        type: string
+        required: false
+        default: '10.x'
+      validate-xml:
+        description: 'Run xmllint over assets/**/*.xml.'
+        type: boolean
+        required: false
+        default: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ inputs.dotnet-version }}
+
+      - name: Restore
+        run: dotnet restore ${{ inputs.solution }}
+
+      - name: Build
+        run: dotnet build ${{ inputs.solution }} --configuration Release --no-restore
+
+      - name: Validate XML files
+        if: ${{ inputs.validate-xml }}
+        uses: phpcsstandards/xmllint-validate@v2
+        with:
+          pattern: "assets/**/*.xml"
+
+      - name: Upload mod package
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          if-no-files-found: error

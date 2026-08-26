@@ -1,0 +1,100 @@
+name: Mod Publish
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: 'Pure semver, e.g. 1.2.3 (the v prefix is added for the tag).'
+        type: string
+        required: true
+      published-file-id:
+        description: 'Steam Workshop published file ID for this mod.'
+        type: string
+        required: true
+      solution:
+        description: 'Solution or project to pack. Empty lets dotnet discover it.'
+        type: string
+        required: false
+        default: ''
+      dotnet-version:
+        type: string
+        required: false
+        default: '10.x'
+      app-id:
+        description: 'Steam app ID. 294100 is RimWorld.'
+        type: string
+        required: false
+        default: '294100'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Validate inputs
+        run: |
+          if [ -z "${{ inputs.published-file-id }}" ]; then
+            echo "::error::published-file-id is empty. Set the WORKSHOP_PUBLISHED_FILE_ID repository variable."
+            exit 1
+          fi
+          if ! printf '%s' "${{ inputs.version }}" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error::version must be pure semver (e.g. 1.2.3), got '${{ inputs.version }}'."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ inputs.dotnet-version }}
+
+      - name: Build & package mod
+        run: dotnet pack ${{ inputs.solution }} --configuration Release
+
+      - name: Generate changelog from conventional commits
+        id: changelog
+        run: |
+          PREV_TAG=$(git describe --tags --abbrev=0 2>/dev/null || true)
+          if [ -z "$PREV_TAG" ]; then
+            CHANGELOG="Initial release"
+          else
+            npx --yes conventional-changelog-cli -p angular -r 0 -o /tmp/changelog_full.md 2>/dev/null
+            CHANGELOG=$(awk '/^## \[Unreleased\]/{flag=1; next} /^# \[/{flag=0} flag' /tmp/changelog_full.md)
+            [ -z "$CHANGELOG" ] && CHANGELOG="No changes since last release"
+          fi
+          {
+            echo "changelog<<EOF"
+            echo "v${{ inputs.version }}"
+            echo "$CHANGELOG"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create tag and release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ inputs.version }}
+          body: ${{ steps.changelog.outputs.changelog }}
+          make_latest: true
+
+      - name: Write published file ID
+        run: echo "${{ inputs.published-file-id }}" > dist/About/PublishedFileId.txt
+
+      - name: Generate Steam TOTP
+        uses: CyberAndrii/steam-totp@v1
+        id: steam-totp
+        with:
+          shared_secret: ${{ secrets.STEAM_SHARED_SECRET }}
+
+      - name: Deploy to Steam Workshop
+        uses: m00nl1ght-dev/steam-workshop-deploy@v4
+        with:
+          username: ${{ secrets.STEAM_USERNAME }}
+          password: ${{ secrets.STEAM_PASSWORD }}
+          totp: ${{ steps.steam-totp.outputs.code }}
+          path: dist
+          appId: ${{ inputs.app-id }}
+          publishedFileId: ${{ inputs.published-file-id }}
+          changeNote: ${{ steps.changelog.outputs.changelog }}
