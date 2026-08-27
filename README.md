@@ -9,6 +9,10 @@ repositories in this organisation.
   release, deploy to the Steam Workshop.
 - [`CONTRIBUTING.md`](CONTRIBUTING.md) — repository layout, build conventions, required
   credentials and the release procedure.
+- [`ATTRIBUTION.md`](ATTRIBUTION.md) — per-mod provenance and the evidence behind each
+  `Original` author credit.
+- [`RELEASE-READINESS.md`](RELEASE-READINESS.md) — what each mod still needs before it can
+  publish.
 
 Mod repositories consume these through thin caller stubs pinned to `@v1`:
 
