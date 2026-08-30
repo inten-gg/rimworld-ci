@@ -143,6 +143,50 @@ Per-repo `STEAM_*` secrets and the older `PUBLISHED_FILE_ID` name are retired. A
 missing `WORKSHOP_PUBLISHED_FILE_ID` fails the publish run up front rather than
 uploading against an empty ID.
 
+## Branch protection
+
+`main` is governed by a ruleset in every repository that can have one: deletion and
+force-push blocked, linear history required, changes land through a pull request with
+squash or rebase, and the `build / build` check must pass. No bypass actors — admins go
+through pull requests too.
+
+`required_approving_review_count` is `0`. The rule forces a PR and a green build, not a
+second person, so you can still self-merge immediately.
+
+The definitions live in [`rulesets/`](rulesets/) and are applied by
+[`scripts/apply-rulesets.sh`](scripts/apply-rulesets.sh), which creates or updates the
+ruleset in place:
+
+```bash
+./scripts/apply-rulesets.sh              # all rimworld-* repos, plus .github
+./scripts/apply-rulesets.sh rimworld-ci  # or a subset
+```
+
+Two things to know:
+
+- **`rimworld-ci` and `.github` use `main-no-ci.json`**, which omits the status-check rule.
+  Neither has a workflow that runs on push or pull request — the two workflows here are
+  `workflow_call` only — so no check run is ever produced. Requiring one would block every
+  merge indefinitely.
+- **`build / build` is the check name, not `Build`.** It is `<caller job>/<called job>` from
+  the reusable workflow. A wrong context string never matches any check, and merges wait
+  forever on something that will never report. Verify against a real run before changing it:
+  ```bash
+  sha=$(gh api /repos/inten-gg/<repo>/commits/main --jq .sha)
+  gh api /repos/inten-gg/<repo>/commits/$sha/check-runs --jq '.check_runs[].name'
+  ```
+
+### Why most repos are unprotected
+
+The organisation is on the **free** plan, where GitHub refuses rulesets on private
+repositories: `Upgrade to GitHub Pro or make this repository public to enable this
+feature`. Ten of the twelve mod repos are private, so they cannot be protected at all
+right now — the script reports them as skipped rather than failing.
+
+This needs a paid plan (GitHub Team for organisations) or making those repos public.
+Re-running the script after either change protects them with no further work. Until then,
+`main` on those repos is convention only.
+
 ## Releasing
 
 1. Land your work on `main` with conventional commit messages.

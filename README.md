@@ -13,6 +13,8 @@ repositories in this organisation.
   `Original` author credit.
 - [`RELEASE-READINESS.md`](RELEASE-READINESS.md) — what each mod still needs before it can
   publish.
+- [`rulesets/`](rulesets/) + [`scripts/apply-rulesets.sh`](scripts/apply-rulesets.sh) —
+  the `main` branch ruleset and the script that applies it.
 
 Mod repositories consume these through thin caller stubs pinned to `@v1`:
 

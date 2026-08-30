@@ -11,20 +11,23 @@ duplicate Workshop items.
 
 ## Status
 
-| Repo | Workshop file ID | `STEAM_*` secrets | Can publish? |
-|---|---|---|---|
-| `rimworld-fallout-zetas` | `3774663099` | per-repo | **yes** — the only one proven end to end |
-| `rimworld-fallout-ncrlegion` | `3777136023` | per-repo | **yes** |
-| `rimworld-storyteller-enclave` | **missing** | per-repo (+ legacy `PUBLISHED_FILE_ID`) | no — see 1 below |
-| `rimworld-fallout-powerarmor-expansion` | `0` (placeholder) | per-repo | no — needs a real ID |
-| `rimworld-fallout-robots` | `0` (placeholder) | **none** | no — needs both |
-| `rimworld-fallout-vehicles` | **missing** | **none** | no — needs both |
-| `rimworld-fallout-research` | **missing** | **none** | no — needs both |
-| `rimworld-warfare-framework` | **missing** | **none** | no — needs both |
-| `rimworld-enclave-territorial-administration` | **missing** | **none** | no — needs both, and it does not compile |
-| `rimworld-fallout-icbmpatch` | **missing** | **none** | no — needs both, and CI cannot compile it |
-| `rimworld-fallout-animals` | **missing** | **none** | **blocked on licensing**, not credentials |
-| `rimworld-fallout-vertibirds` | `3764280645` | per-repo | **blocked on licensing** — credentials are otherwise ready |
+| Repo | Workshop file ID | `STEAM_*` secrets | `main` protected | Can publish? |
+|---|---|---|---|---|
+| `rimworld-fallout-zetas` | `3774663099` | per-repo | no — private, free plan | **yes** — the only one proven end to end |
+| `rimworld-fallout-ncrlegion` | `3777136023` | per-repo | no — private, free plan | **yes** |
+| `rimworld-storyteller-enclave` | **missing** | per-repo (+ legacy `PUBLISHED_FILE_ID`) | no — private, free plan | no — see 1 below |
+| `rimworld-fallout-powerarmor-expansion` | `0` (placeholder) | per-repo | no — private, free plan | no — needs a real ID |
+| `rimworld-fallout-robots` | `0` (placeholder) | **none** | yes | no — needs both |
+| `rimworld-fallout-vehicles` | **missing** | **none** | no — private, free plan | no — needs both |
+| `rimworld-fallout-research` | **missing** | **none** | no — private, free plan | no — needs both |
+| `rimworld-warfare-framework` | **missing** | **none** | no — private, free plan | no — needs both |
+| `rimworld-enclave-territorial-administration` | **missing** | **none** | no — private, free plan | no — needs both, and it does not compile |
+| `rimworld-fallout-icbmpatch` | **missing** | **none** | no — private, free plan | no — needs both, and CI cannot compile it |
+| `rimworld-fallout-animals` | **missing** | **none** | no — private, free plan | **blocked on licensing**, not credentials |
+| `rimworld-fallout-vertibirds` | `3764280645` | per-repo | no — private, free plan | **blocked on licensing** — credentials are otherwise ready |
+
+Branch protection is unavailable on private repos on the free plan; see the branch
+protection section of [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## What needs doing
 
